@@ -1,0 +1,102 @@
+{
+  "model_name": "logistic_regression+isotonic",
+  "base_estimator": "logistic_regression",
+  "calibrated": true,
+  "model_version": "1.0.0",
+  "trained_at": "2026-08-20T05:58:33.011204+00:00",
+  "rows_total": 500000,
+  "training_rows": 350000,
+  "validation_rows": 75000,
+  "test_rows": 75000,
+  "split_strategy": "chronological",
+  "positive_rate": 0.277916,
+  "target_definition": "liked OR shared OR commented OR followed_creator OR replayed",
+  "selection_metric": "validation roc_auc with a paired-bootstrap tie test, then cost",
+  "selection_rationale": "Linear baseline and the floor for the problem. With only two features it is also a serious contender: there is no high-order structure left for a tree to find. Smallest artefact, fastest inference, and the only candidate whose decision rule can be written down in one line.",
+  "degenerate_at_default_threshold": [
+    "logistic_regression",
+    "random_forest",
+    "gradient_boosting",
+    "lightgbm"
+  ],
+  "recommended_threshold": 0.381201,
+  "recommended_threshold_rule": "highest lift among operating points flagging at least 10% of traffic",
+  "recommended_threshold_lift": 1.4004,
+  "recommended_threshold_flag_rate": 0.238507,
+  "recommended_threshold_precision": 0.393057,
+  "f1_optimisation_degenerate": true,
+  "max_predicted_probability": 0.389043,
+  "features": [
+    "watch_time_seconds",
+    "watch_ratio"
+  ],
+  "feature_selection": "see reports/feature_selection.json and docs/FEATURE_SELECTION.md",
+  "metrics": {
+    "logistic_regression": {
+      "roc_auc": 0.571115,
+      "pr_auc": 0.337399,
+      "log_loss": 0.584653,
+      "brier": 0.197997,
+      "ece": 0.026542,
+      "accuracy": 0.721653,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "flagged_rate": 0.0,
+      "mean_probability": 0.277127
+    },
+    "random_forest": {
+      "roc_auc": 0.573594,
+      "pr_auc": 0.336577,
+      "log_loss": 0.581371,
+      "brier": 0.196704,
+      "ece": 0.003955,
+      "accuracy": 0.721653,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "flagged_rate": 0.0,
+      "mean_probability": 0.276991
+    },
+    "gradient_boosting": {
+      "roc_auc": 0.574159,
+      "pr_auc": 0.336005,
+      "log_loss": 0.581291,
+      "brier": 0.196673,
+      "ece": 0.003947,
+      "accuracy": 0.721653,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "flagged_rate": 0.0,
+      "mean_probability": 0.276918
+    },
+    "lightgbm": {
+      "roc_auc": 0.573166,
+      "pr_auc": 0.33535,
+      "log_loss": 0.581614,
+      "brier": 0.19679,
+      "ece": 0.003995,
+      "accuracy": 0.721653,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "flagged_rate": 0.0,
+      "mean_probability": 0.277115
+    }
+  },
+  "test_metrics": {
+    "roc_auc": 0.579572,
+    "pr_auc": 0.32674,
+    "log_loss": 0.581739,
+    "brier": 0.196939,
+    "ece": 0.003533,
+    "accuracy": 0.719333,
+    "precision": 0.0,
+    "recall": 0.0,
+    "f1": 0.0,
+    "flagged_rate": 0.0,
+    "mean_probability": 0.278541
+  },
+  "random_split_roc_auc": 0.576986
+}
