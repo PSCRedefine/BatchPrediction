@@ -122,6 +122,8 @@ class HealthResponse(BaseModel):
     model_loaded: bool
     store_loaded: bool
     max_batch_size: int
+    uptime_seconds: float
+    model_name: str
     version: str
     timestamp: str
 
@@ -179,6 +181,7 @@ def create_app(
         allow_headers=["*"],
     )
 
+    app.state.started_at = time.time()
     app.state.model = None
     app.state.metadata = {"model_name": "unknown", "model_version": __version__}
     app.state.store = None
@@ -227,6 +230,8 @@ def create_app(
             model_loaded=app.state.model is not None,
             store_loaded=app.state.store is not None,
             max_batch_size=MAX_BATCH_SIZE,
+            uptime_seconds=round(time.time() - app.state.started_at, 1),
+            model_name=str(app.state.metadata.get("model_name", "unknown")),
             version=__version__,
             timestamp=datetime.now(UTC).isoformat(),
         )

@@ -1,0 +1,8 @@
+# Pinned so the console looks the same on every machine, and so the screenshots
+# in the README match what a reader sees when they run it.
+[theme]
+base = "dark"
+primaryColor = "#ff4b4b"
+
+[server]
+headless = true
