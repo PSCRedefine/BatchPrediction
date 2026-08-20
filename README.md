@@ -4,7 +4,9 @@ Batch engagement prediction for **Cognitive Shorts**: a FastAPI service that
 scores up to 100 user-video interactions per call, and a Streamlit console for
 driving it from a CSV or by hand.
 
-Built to [docs/SPEC.md](docs/SPEC.md). 77 tests.
+Built to [docs/SPEC.md](docs/SPEC.md). 78 tests.
+
+![Batch prediction console](image/ui_batch_results.png)
 
 ---
 
@@ -15,6 +17,7 @@ Built to [docs/SPEC.md](docs/SPEC.md). 77 tests.
 - [How a batch is processed](#how-a-batch-is-processed)
 - [Fault tolerance](#fault-tolerance)
 - [The model](#the-model)
+- [Deployment](#deployment)
 - [Repository layout](#repository-layout)
 - [Verification](#verification)
 - [Limitations](#limitations)
@@ -38,6 +41,14 @@ so what you see is exactly what any API client would get.
 
 ## Quick start
 
+With Docker:
+
+```bash
+docker compose up --build
+```
+
+Or locally:
+
 ```bash
 python -m pip install -r requirements-dev.txt
 python -m pip install -e .
@@ -58,6 +69,8 @@ streamlit run app.py
 Then open http://localhost:8501 and upload
 [`data/sample_batch_requests.csv`](data/sample_batch_requests.csv) — 20 rows,
 two of which fail on purpose so the error path is visible on the first run.
+Or skip the file picker: **http://localhost:8501/?demo=1** loads that sample and
+scores it in one step. The screenshot above is that URL, captured unedited.
 
 Point the console at a different API with `BATCH_PREDICTION_API_URL`.
 
@@ -111,6 +124,11 @@ clone with no training step. It is an isotonic-calibrated logistic regression
 over two features, `watch_time_seconds` and `watch_ratio`, trained in the
 [SinglePrediction](https://github.com/PSCRedefine/SinglePrediction) project.
 
+**Why this model, and what it was chosen over:
+[docs/MODEL_SELECTION.md](docs/MODEL_SELECTION.md)** — four candidates, a paired
+bootstrap showing all four are statistically tied, the cost argument that breaks
+the tie, the calibration trade-off it costs, and why the threshold is 0.381.
+
 Two things are worth knowing before reading anything into its output:
 
 - **The signal is weak.** Test ROC-AUC is 0.5796. The lift at the recommended
@@ -126,6 +144,22 @@ That is the calibrator, not a bug.
 as an input. It is not a model feature. Accepting a field and training on it
 are separate decisions.
 
+## Deployment
+
+Two services from one image: the API on 8000, the console on 8501. The console
+waits for the API's health check before it starts, and that check tests
+`model_loaded` rather than just the port — a degraded service answers on the
+port perfectly well.
+
+```bash
+docker compose up --build
+```
+
+Full guide, including configuration, probes, scaling and troubleshooting:
+**[docs/DEPLOYMENT.md](docs/DEPLOYMENT.md)**. The local path there was run end
+to end; the Docker build was not, because Docker is not installed on the
+development machine.
+
 ## Repository layout
 
 ```text
@@ -139,10 +173,14 @@ models/                          committed model and metadata (3 KB)
 data/
   users.csv, videos.csv          lookup tables the FeatureStore needs
   sample_batch_requests.csv      20 rows, two failing on purpose
+Dockerfile, docker-compose.yml   one image, two services
 docs/
   SPEC.md                        the requirements this was built to
+  MODEL_SELECTION.md             why this model, with the measurements
+  DEPLOYMENT.md                  running it, locally and in containers
   API.md                         endpoint contract
-tests/                           77 tests
+image/                           console screenshots
+tests/                           78 tests
 ```
 
 ## Verification
@@ -153,7 +191,7 @@ python -m pytest -q
 
 | Area | Tests | Covers |
 |---|---:|---|
-| `test_api.py` | 28 | routes, status codes, per-row errors, batch limits, clipping |
+| `test_api.py` | 29 | routes, status codes, per-row errors, batch limits, clipping |
 | `test_features.py` | 25 | identifier validation, `watch_ratio`, per-row isolation |
 | `test_batching.py` | 24 | required columns, truncation, type conversion, payload shape |
 

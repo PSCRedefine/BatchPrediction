@@ -1,0 +1,13 @@
+.git/
+.github/
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.DS_Store
+image/
+docs/
+tests/
+*.log
+results_*.csv

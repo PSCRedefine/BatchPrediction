@@ -20,6 +20,11 @@ class TestHealth:
         assert body["store_loaded"] is True
         assert body["max_batch_size"] == MAX_BATCH_SIZE
 
+    def test_reports_uptime_and_model_name(self, client):
+        body = client.get("/health").json()
+        assert body["uptime_seconds"] >= 0.0
+        assert body["model_name"] != "unknown"
+
     def test_stays_serviceable_when_the_model_is_missing(self, tmp_path):
         app = create_app(model_path=tmp_path / "absent.joblib")
         with TestClient(app) as degraded:
