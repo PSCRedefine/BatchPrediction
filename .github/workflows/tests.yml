@@ -1,0 +1,44 @@
+# The suite each README cites, run on every interpreter the package claims to
+# support. The matrix is that claim made checkable: `pyproject.toml` declares
+# `>=3.11,<3.14`, so a change lands only if 3.11, 3.12 and 3.13 all pass.
+#
+# `requirements-dev.txt` starts with `-r requirements.txt`, so one install
+# covers both the runtime and the test dependencies.
+name: tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  pytest:
+    name: pytest (python ${{ matrix.python-version }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.11", "3.12", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+          cache-dependency-path: |
+            requirements.txt
+            requirements-dev.txt
+
+      - name: Install
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements-dev.txt
+          python -m pip install --no-deps -e .
+
+      - name: Test
+        run: python -m pytest -q
