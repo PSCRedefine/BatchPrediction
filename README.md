@@ -1,10 +1,14 @@
 # Batch Prediction
 
+[![tests](https://github.com/PSCRedefine/BatchPrediction/actions/workflows/tests.yml/badge.svg)](https://github.com/PSCRedefine/BatchPrediction/actions/workflows/tests.yml)
+
 Batch engagement prediction for **Cognitive Shorts**: a FastAPI service that
 scores up to 100 user-video interactions per call, and a Streamlit console for
 driving it from a CSV or by hand.
 
 Built to [docs/SPEC.md](docs/SPEC.md). 78 tests.
+
+*Two of four in [a series](#the-series):*  [Single Prediction](https://github.com/PSCRedefine/SinglePrediction) → **Batch Prediction** → [Model Info](https://github.com/PSCRedefine/ModelInfo) → [Analytics Dashboard](https://github.com/PSCRedefine/AnalyticsDashboard)
 
 ![Batch prediction console](image/ui_batch_results.png)
 
@@ -21,6 +25,7 @@ Built to [docs/SPEC.md](docs/SPEC.md). 78 tests.
 - [Repository layout](#repository-layout)
 - [Verification](#verification)
 - [Limitations](#limitations)
+- [The series](#the-series)
 
 ---
 
@@ -179,6 +184,7 @@ docs/
   MODEL_SELECTION.md             why this model, with the measurements
   DEPLOYMENT.md                  running it, locally and in containers
   API.md                         endpoint contract
+  PRODUCTION_READINESS.md        what it would need to carry real traffic
 image/                           console screenshots
 tests/                           78 tests
 ```
@@ -201,6 +207,11 @@ per-row errors come from.
 
 ## Limitations
 
+This section lists what is known to be missing or imperfect in what was built.
+A wider account — what this service would need before it carries real traffic,
+ordered by risk, with the cost of each remedy — is in
+[docs/PRODUCTION_READINESS.md](docs/PRODUCTION_READINESS.md).
+
 - **This duplicates SinglePrediction's model and feature code.** The two
   repositories now hold separate copies of `features.py`, the API skeleton and
   the model artifact; a change to the feature contract has to be made twice.
@@ -211,3 +222,19 @@ per-row errors come from.
   service from one caller, not from many.
 - **`users.csv` and `videos.csv` are committed** (9 MB) so a clone runs. A real
   deployment would read them from a store rather than from the repository.
+
+---
+
+## The series
+
+Four repositories, read in this order, are one product line: score one, score
+many, check what is deployed, then watch it in production.
+
+1. [Single Prediction](https://github.com/PSCRedefine/SinglePrediction) — one prediction per request — feature selection, model choice, calibration and the operating point
+2. **Batch Prediction** *(you are here)* — up to 100 rows per call, with per-row fault isolation
+3. [Model Info](https://github.com/PSCRedefine/ModelInfo) — what is actually loaded in memory, and what that tells you
+4. [Analytics Dashboard](https://github.com/PSCRedefine/AnalyticsDashboard) — traffic and model-output monitoring over a request log
+
+Each repository runs on its own. The cost of that is stated plainly in each
+Limitations section: `features.py`, the API skeleton and the model artefact
+are duplicated across all four.
