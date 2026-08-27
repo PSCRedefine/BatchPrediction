@@ -1,88 +1,88 @@
 # Batch Prediction
 
-## 1. 概述
-### 1.1 页面定位
-Batch Prediction（批量预测）是 Cognitive Shorts 系统前端 UI（基于 Streamlit）中的一个核心功能模块。该页面允许用户一次性提交多条“用户-视频-观看行为”数据，调用后端 ML 模型接口，快速获取这批数据的预测互动概率
+## 1. Overview
+### 1.1 Page Purpose
+Batch Prediction is a core functional module in the front-end UI (based on Streamlit) of the Cognitive Shorts system. This page allows the user to submit multiple "user-video-watch behaviour" records in one go, call the back-end ML model interface, and quickly obtain the predicted interaction probabilities for this batch of data
 
-## 2. 页面需求 (UI)
-页面整体划分为两大功能区：**CSV 文件上传模式** 和 **手动批量录入模式**
+## 2. Page Requirements (UI)
+The page is divided into two main functional areas: **CSV File Upload Mode** and **Manual Batch Input Mode**
 
-### 2.1 页面标题与导航
-- **标题**：`📊 Batch Prediction`
-- **入口**：左侧 Sidebar 导航栏选择 "Batch Prediction"
+### 2.1 Page Title and Navigation
+- **Title**: `📊 Batch Prediction`
+- **Entry point**: select "Batch Prediction" in the left-hand Sidebar navigation bar
 
-### 2.2 CSV 文件上传模式 (File Upload Mode)
-适用于数据量较大（100条以内）的预测场景
+### 2.2 CSV File Upload Mode
+Suitable for prediction scenarios with a relatively large volume of data (up to 100 rows)
 
-**UI 元素：**
-1. **文件上传组件**：
-   - 提示文案："Upload CSV file with user interactions"
-   - 帮助说明："CSV should have columns: user_id, video_id, watch_time"
-   - 限制格式：仅支持 `.csv`
-2. **状态提示**：成功加载后显示 "✅ Loaded {N} rows"
-3. **数据预览区 (Data Preview)**：展示解析后的 CSV 前 5 行数据表格
-4. **警告提示 (Warning)**：如果上传数据超过 100 行，显示黄条警告："File has {N} rows. Only first 100 will be processed."
-5. **执行按钮**：主色调按钮 "🚀 Run Batch Prediction"
+**UI elements:**
+1. **File upload component**:
+   - Prompt text: "Upload CSV file with user interactions"
+   - Help text: "CSV should have columns: user_id, video_id, watch_time"
+   - Format restriction: only `.csv` is supported
+2. **Status message**: after a successful load, display "✅ Loaded {N} rows"
+3. **Data Preview**: display a table of the first 5 rows of the parsed CSV
+4. **Warning**: if the uploaded data exceeds 100 rows, display a yellow warning bar: "File has {N} rows. Only first 100 will be processed."
+5. **Action button**: primary-colour button "🚀 Run Batch Prediction"
 
-### 2.3 手动批量录入模式 (Manual Batch Input Mode)
-适用于少量、临时性的数据预测场景
+### 2.3 Manual Batch Input Mode
+Suitable for small, ad hoc data prediction scenarios
 
-**UI 元素：**
-1. **说明信息**：蓝条提示 "💡 Upload a CSV file above for bulk processing, or add individual requests below"
-2. **表单录入区 (Add Request)**：
-   - `User ID` 输入框
-   - `Video ID` 输入框
-   - `Watch Time` 数字输入框
-   - "➕ Add Request" 提交按钮
-3. **当前批次列表区 (Current Batch)**：
-   - 标题："Current Batch ({N} requests)"
-   - 数据表格：展示已添加的所有请求明细。
-   - "🗑️ Clear All" 按钮：清空当前列表。
-   - "🚀 Process Batch" 主色调按钮：提交当前列表进行预测
+**UI elements:**
+1. **Information message**: blue information bar "💡 Upload a CSV file above for bulk processing, or add individual requests below"
+2. **Form input area (Add Request)**:
+   - `User ID` input field
+   - `Video ID` input field
+   - `Watch Time` numeric input field
+   - "➕ Add Request" submit button
+3. **Current batch list area (Current Batch)**:
+   - Title: "Current Batch ({N} requests)"
+   - Data table: display the details of all requests that have been added.
+   - "🗑️ Clear All" button: clear the current list.
+   - "🚀 Process Batch" primary-colour button: submit the current list for prediction
 
-### 2.4 预测结果展示区 (Results & Analytics)
-点击预测并收到后端响应后展示。
+### 2.4 Prediction Results Display Area (Results & Analytics)
+Displayed after the prediction is triggered and a response is received from the back end.
 
-**UI 元素：**
-1. **成功提示**："✅ Batch prediction/complete!"
-2. **核心指标看板 (Metrics)**：
-   - `Total Requests`：总请求数
-   - `Successful`：成功预测数
-   - `Avg Probability`：平均预测概率（保留3位小数）
-   - `Response Time`：总响应时间（毫秒）
-3. **结果表格 (Results Dataframe)**：展示包含预测结果或错误信息的完整数据
-4. **导出按钮**："📥 Download Results CSV"，允许用户下载完整的预测结果
-5. **可视化图表 (Visualization)**：
-   - 图表类型：柱状图/直方图 (Histogram)
-   - 标题："Prediction Probability Distribution"
-   - X轴：预测概率分布
-   - Y轴：频次 (Count)
+**UI elements:**
+1. **Success message**: "✅ Batch prediction/complete!"
+2. **Key metrics panel (Metrics)**:
+   - `Total Requests`: total number of requests
+   - `Successful`: number of successful predictions
+   - `Avg Probability`: average predicted probability (to 3 decimal places)
+   - `Response Time`: total response time (milliseconds)
+3. **Results table (Results Dataframe)**: display the complete data including prediction results or error messages
+4. **Export button**: "📥 Download Results CSV", allowing the user to download the complete prediction results
+5. **Visualisation chart (Visualization)**:
+   - Chart type: bar chart / histogram (Histogram)
+   - Title: "Prediction Probability Distribution"
+   - X axis: predicted probability distribution
+   - Y axis: frequency (Count)
 
 ---
 
-## 3. 功能需求 (Functional Requirements)
+## 3. Functional Requirements
 
-### 3.1 输入与数据校验规则
-**CSV 模式：**
-1. **必填列校验**：上传的 CSV 必须包含 `user_id`, `video_id`, `watch_time` 三列。缺少任何一列则中止流程并显示红条错误 "Missing required columns: [...]"。
-2. **选填列**：支持可选的 `hour_of_day` 列。
-3. **数量限制**：为保护后端资源，单次批量预测强制截断前 100 条数据（`df.head(100)`）。
-4. **数据类型转换**：
-   - `user_id`, `video_id` 转换为字符串 (`str`)
-   - `watch_time` 转换为浮点数 (`float`)
-   - `hour_of_day` (如存在) 转换为整数 (`int`)
+### 3.1 Input and Data Validation Rules
+**CSV mode:**
+1. **Required column validation**: the uploaded CSV must contain the three columns `user_id`, `video_id` and `watch_time`. If any one of them is missing, the process must be aborted and a red error bar displayed: "Missing required columns: [...]".
+2. **Optional columns**: an optional `hour_of_day` column is supported.
+3. **Quantity limit**: to protect back-end resources, a single batch prediction is forcibly truncated to the first 100 rows (`df.head(100)`).
+4. **Data type conversion**:
+   - `user_id`, `video_id` converted to string (`str`)
+   - `watch_time` converted to float (`float`)
+   - `hour_of_day` (if present) converted to integer (`int`)
 
-**手动模式：**
-1. **空值校验**：点击添加时，`user_id` 和 `video_id` 不能为空
-2. **状态管理**：使用 Streamlit `session_state` 持久化保存当前用户添加的请求列表
+**Manual mode:**
+1. **Empty value validation**: when Add is clicked, `user_id` and `video_id` must not be empty
+2. **State management**: use the Streamlit `session_state` to persist the list of requests added by the current user
 
-### 3.2 接口通信规范
-前端统一通过封装的 `call_api("predict/batch", payload)` 函数与后端通信
+### 3.2 Interface Communication Specification
+The front end communicates with the back end uniformly through the wrapped `call_api("predict/batch", payload)` function
 
-**请求 (Request):**
+**Request:**
 - **Method**: POST
 - **Endpoint**: `/predict/batch`
-- **Payload 格式**:
+- **Payload format**:
   ```json
   {
     "requests": [
@@ -90,29 +90,29 @@ Batch Prediction（批量预测）是 Cognitive Shorts 系统前端 UI（基于 
         "user_id": "user_123",
         "video_id": "video_456",
         "watch_time": 45.0,
-        "hour_of_day": 14  // 可选
+        "hour_of_day": 14  // optional
       }
     ]
   }
   ```
 
-**响应处理 (Response Handling):**
-- **正常响应 (HTTP 200)**：解析返回的 JSON，提取 `results` 数组、`batch_size` 和 `response_time_ms` 进行页面渲染。
-- **业务异常 (HTTP 4xx/5xx)**：捕获异常信息，展示红条错误 "❌ Batch prediction failed: {error}"。
-- **网络异常**：处理连接拒绝或超时，展示 "API server is offline" 或 "Request timeout"。
+**Response Handling:**
+- **Normal response (HTTP 200)**: parse the returned JSON and extract the `results` array, `batch_size` and `response_time_ms` to render the page.
+- **Business exception (HTTP 4xx/5xx)**: catch the exception information and display a red error bar: "❌ Batch prediction failed: {error}".
+- **Network exception**: handle connection refused or timeout, and display "API server is offline" or "Request timeout".
 
-### 3.3 结果数据处理
-1. **成功预测的数据**：后端返回的 `results` 中包含 `probability` (概率值) 和 `confidence` (置信度)，前端需将其合并到原始请求数据中展示。
-2. **失败预测的数据**（部分失败）：后端采用容错机制，如果某条数据异常（如格式不符），不中断整个批次，该条结果会返回 `error` 字段。前端需在表格中如实展示该 `error` 信息，且在统计 "Successful" 指标时将其排除。
+### 3.3 Result Data Processing
+1. **Successfully predicted data**: the `results` returned by the back end contain `probability` (probability value) and `confidence` (confidence level); the front end must merge these into the original request data for display.
+2. **Failed prediction data** (partial failure): the back end uses a fault-tolerant mechanism. If a single record is invalid (for example, malformed), the whole batch is not interrupted and that result returns an `error` field. The front end must display that `error` information faithfully in the table, and must exclude it when calculating the "Successful" metric.
 
 ---
 
-## 4. 后端支持需求 (API Requirements)
-1. **接口定义**：提供 `/predict/batch` 路由，接收包含 `PredictionRequest` 列表的 `BatchPredictionRequest` 对象。
-2. **并发限制**：在模型层面上限制 `requests` 数组 `max_items=100`，超限直接返回 400 Bad Request
-4. **容错机制**：遍历请求列表时，需对**单条数据**进行 `try-except` 包裹。单条数据特征工程或预测失败不应导致整个批次崩溃，失败的条目应返回错误原因字典
-5. **模型调用**：
-   - 支持概率预测 (`predict_proba`) 和回归预测 (兼容 LightGBM)
-   - 概率值强制裁剪 (`np.clip`) 到 `[0.0, 1.0]` 范围内。
-6. **响应组装**：返回包含所有处理结果、总请求量和后端处理耗时的统一响应结构
+## 4. Back-end Support Requirements (API Requirements)
+1. **Interface definition**: provide a `/predict/batch` route that accepts a `BatchPredictionRequest` object containing a list of `PredictionRequest`.
+2. **Concurrency limit**: limit the `requests` array to `max_items=100` at the model level; a request exceeding the limit must return 400 Bad Request directly
+4. **Fault tolerance**: when iterating over the request list, each **individual record** must be wrapped in `try-except`. A feature engineering or prediction failure on a single record should not cause the whole batch to crash; a failed entry should return a dictionary giving the reason for the error
+5. **Model invocation**:
+   - Supports probability prediction (`predict_proba`) and regression prediction (compatible with LightGBM)
+   - Probability values are forcibly clipped (`np.clip`) to the range `[0.0, 1.0]`.
+6. **Response assembly**: return a unified response structure containing all processing results, the total number of requests and the back-end processing time
 
